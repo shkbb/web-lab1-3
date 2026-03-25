@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Конструктор резюме — створіть професійне резюме онлайн">
+    <title>Конструктор Резюме</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- ===== HEADER ===== -->
+    <header class="app-header">
+        <div class="header-content">
+            <h1 class="logo">
+                <span class="logo-icon">📄</span> Конструктор Резюме
+            </h1>
+            <p class="tagline">Створіть професійне резюме за кілька хвилин</p>
+        </div>
+    </header>
+
+    <!-- ===== MAIN LAYOUT ===== -->
+    <main class="app-main">
+        <!-- LEFT: Form Panel -->
+        <aside class="form-panel" id="formPanel">
+            <nav class="tabs" id="tabs">
+                <button class="tab active" data-tab="personal" id="tabPersonal">
+                    <span class="tab-icon">👤</span> Особисті дані
+                </button>
+                <button class="tab" data-tab="experience" id="tabExperience">
+                    <span class="tab-icon">💼</span> Досвід
+                </button>
+                <button class="tab" data-tab="education" id="tabEducation">
+                    <span class="tab-icon">🎓</span> Освіта
+                </button>
+                <button class="tab" data-tab="skills" id="tabSkills">
+                    <span class="tab-icon">⚡</span> Навички
+                </button>
+            </nav>
+
+            <!-- ── Personal Info ── -->
+            <section class="form-section active" id="sectionPersonal">
+                <h2 class="section-title">Особисті дані</h2>
+                <form id="formPersonal" novalidate>
+                    <div class="form-group">
+                        <label for="fullName">Повне ім'я <span class="req">*</span></label>
+                        <input type="text" id="fullName" name="fullName" placeholder="Іван Петренко" autocomplete="name">
+                        <span class="error-msg" id="errFullName"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email <span class="req">*</span></label>
+                        <input type="email" id="email" name="email" placeholder="ivan@example.com" autocomplete="email">
+                        <span class="error-msg" id="errEmail"></span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Телефон <span class="req">*</span></label>
+                            <input type="tel" id="phone" name="phone" placeholder="+380 XX XXX XX XX" autocomplete="tel">
+                            <span class="error-msg" id="errPhone"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Вік <span class="req">*</span></label>
+                            <input type="text" id="age" name="age" placeholder="25" inputmode="numeric">
+                            <span class="error-msg" id="errAge"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Адреса</label>
+                        <input type="text" id="address" name="address" placeholder="м. Київ, Україна">
+                        <span class="error-msg" id="errAddress"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="summary">Про себе</label>
+                        <textarea id="summary" name="summary" rows="4" placeholder="Коротко опишіть себе та свої цілі..."></textarea>
+                        <span class="error-msg" id="errSummary"></span>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ── Experience ── -->
+            <section class="form-section" id="sectionExperience">
+                <h2 class="section-title">Досвід роботи</h2>
+                <div id="experienceEntries">
+                    <!-- dynamic entries appended here -->
+                </div>
+                <button type="button" class="btn btn-add" id="btnAddExperience">
+                    <span>＋</span> Додати досвід
+                </button>
+            </section>
+
+            <!-- ── Education ── -->
+            <section class="form-section" id="sectionEducation">
+                <h2 class="section-title">Освіта</h2>
+                <div id="educationEntries">
+                    <!-- dynamic entries appended here -->
+                </div>
+                <button type="button" class="btn btn-add" id="btnAddEducation">
+                    <span>＋</span> Додати освіту
+                </button>
+            </section>
+
+            <!-- ── Skills ── -->
+            <section class="form-section" id="sectionSkills">
+                <h2 class="section-title">Навички</h2>
+                <form id="formSkills" novalidate>
+                    <div class="form-group">
+                        <label for="skillsInput">Навички <span class="req">*</span></label>
+                        <textarea id="skillsInput" name="skills" rows="4" placeholder="JavaScript, HTML, CSS, React, Node.js..."></textarea>
+                        <span class="hint">Введіть навички через кому</span>
+                        <span class="error-msg" id="errSkills"></span>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ── Action buttons ── -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" id="btnGenerate">
+                    🚀 Створити резюме
+                </button>
+                <div class="btn-group-secondary">
+                    <button type="button" class="btn btn-secondary" id="btnSave">💾 Зберегти</button>
+                    <button type="button" class="btn btn-secondary" id="btnLoad">📂 Завантажити</button>
+                    <button type="button" class="btn btn-danger" id="btnClear">🗑️ Очистити</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT: Resume Preview -->
+        <section class="preview-panel" id="previewPanel">
+            <div class="preview-header">
+                <h2>Попередній перегляд</h2>
+                <button type="button" class="btn btn-sm" id="btnPrint" title="Друк">🖨️ Друк</button>
+            </div>
+            <div class="resume-preview" id="resumePreview">
+                <div class="preview-placeholder" id="previewPlaceholder">
+                    <div class="placeholder-icon">📋</div>
+                    <p>Заповніть форму та натисніть <strong>«Створити резюме»</strong>, щоб побачити результат</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ── Toast notifications ── -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ── Scripts ── -->
+    <script src="js/validation.js"></script>
+    <script src="js/models.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
