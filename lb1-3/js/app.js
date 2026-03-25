@@ -1,23 +1,5 @@
-/**
- * app.js — Головний модуль застосунку «Конструктор Резюме»
- * 
- * Відповідає за:
- * - Навігацію по вкладках (tabs)
- * - Збір даних із форм
- * - Валідацію та показ помилок
- * - Створення OOP-об'єктів та рендеринг резюме
- * - Динамічне додавання / видалення записів Experience та Education
- * - Збереження / завантаження / очищення даних у localStorage
- * - Редагування секцій із попереднього перегляду
- * - Toast-повідомлення
- * 
- * "use strict" — суворий режим JavaScript.
- */
 "use strict";
 
-// ============================================================
-//  Глобальні посилання на DOM-елементи
-// ============================================================
 
 const DOM = {
     tabs:              document.getElementById('tabs'),
@@ -32,7 +14,7 @@ const DOM = {
     resumePreview:     document.getElementById('resumePreview'),
     previewPlaceholder: document.getElementById('previewPlaceholder'),
     toastContainer:    document.getElementById('toastContainer'),
-    // Кнопки
+
     btnGenerate:  document.getElementById('btnGenerate'),
     btnSave:      document.getElementById('btnSave'),
     btnLoad:      document.getElementById('btnLoad'),
@@ -42,28 +24,20 @@ const DOM = {
     btnAddEdu:    document.getElementById('btnAddEducation'),
 };
 
-// Глобальна змінна резюме (доступна з DevTools для тестування)
 let currentResume = new Resume();
 window.__resume = currentResume;
 
-// Лічильники для унікальних ID
 let expCounter = 0;
 let eduCounter = 0;
 
-// ============================================================
-//  Вкладки (Tabs)
-// ============================================================
 
-/**
- * switchTab — перемикає активну вкладку та відповідну секцію.
- * @param {string} tabName — ім'я вкладки (personal, experience, ...)
- */
+
 function switchTab(tabName) {
-    // Деактивувати всі вкладки
+
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
 
-    // Активувати обрану вкладку
+
     const tab = document.querySelector(`.tab[data-tab="${tabName}"]`);
     const section = DOM.sections[tabName];
     if (tab) tab.classList.add('active');
@@ -77,16 +51,7 @@ DOM.tabs.addEventListener('click', function (e) {
     }
 });
 
-// ============================================================
-//  Динамічні записи — Experience
-// ============================================================
 
-/**
- * createExperienceEntry — створює HTML-картку для одного запису досвіду.
- * Використовує DOM-методи для динамічного створення розмітки.
- * 
- * @returns {HTMLElement}
- */
 function createExperienceEntry() {
     expCounter++;
     const card = document.createElement('div');
@@ -127,7 +92,7 @@ function createExperienceEntry() {
         </div>
     `;
 
-    // Обробник кнопки видалення
+
     card.querySelector('.btn-remove-entry').addEventListener('click', function () {
         card.style.animation = 'fadeIn 0.2s ease reverse';
         setTimeout(() => card.remove(), 200);
@@ -140,14 +105,7 @@ DOM.btnAddExp.addEventListener('click', function () {
     DOM.experienceEntries.appendChild(createExperienceEntry());
 });
 
-// ============================================================
-//  Динамічні записи — Education
-// ============================================================
 
-/**
- * createEducationEntry — створює HTML-картку для освіти.
- * @returns {HTMLElement}
- */
 function createEducationEntry() {
     eduCounter++;
     const card = document.createElement('div');
@@ -195,14 +153,6 @@ DOM.btnAddEdu.addEventListener('click', function () {
     DOM.educationEntries.appendChild(createEducationEntry());
 });
 
-// ============================================================
-//  Збір даних із форм
-// ============================================================
-
-/**
- * collectPersonalData — збирає дані з секції особистих даних.
- * @returns {Object}
- */
 function collectPersonalData() {
     return {
         fullName: document.getElementById('fullName').value,
@@ -214,10 +164,7 @@ function collectPersonalData() {
     };
 }
 
-/**
- * collectExperienceData — збирає дані всіх записів досвіду.
- * @returns {Array<Object>}
- */
+
 function collectExperienceData() {
     const entries = [];
     DOM.experienceEntries.querySelectorAll('.entry-card').forEach(card => {
@@ -232,10 +179,7 @@ function collectExperienceData() {
     return entries;
 }
 
-/**
- * collectEducationData — збирає дані всіх записів освіти.
- * @returns {Array<Object>}
- */
+
 function collectEducationData() {
     const entries = [];
     DOM.educationEntries.querySelectorAll('.entry-card').forEach(card => {
@@ -249,63 +193,39 @@ function collectEducationData() {
     return entries;
 }
 
-/**
- * collectSkillsData — збирає навички.
- * @returns {Object}
- */
 function collectSkillsData() {
     return {
         skills: document.getElementById('skillsInput').value,
     };
 }
 
-// ============================================================
-//  Показ / очищення помилок валідації
-// ============================================================
 
-/**
- * showFieldError — показує повідомлення про помилку біля поля.
- * @param {HTMLElement} input — поле вводу
- * @param {string} message — текст помилки
- */
 function showFieldError(input, message) {
     input.classList.add('invalid');
     const errSpan = input.parentElement.querySelector('.error-msg');
     if (errSpan) errSpan.textContent = message;
 }
 
-/**
- * clearFieldError — очищує помилку з поля.
- * @param {HTMLElement} input
- */
+
 function clearFieldError(input) {
     input.classList.remove('invalid');
     const errSpan = input.parentElement.querySelector('.error-msg');
     if (errSpan) errSpan.textContent = '';
 }
 
-/**
- * clearAllErrors — очищує всі помилки на сторінці.
- */
+
 function clearAllErrors() {
     document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
     document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
 }
 
-// ============================================================
-//  Валідація всієї форми
-// ============================================================
 
-/**
- * validateAll — перевіряє всі секції та показує помилки.
- * @returns {boolean} — true, якщо все валідно
- */
 function validateAll() {
     clearAllErrors();
     let allValid = true;
     let firstInvalidTab = null;
 
-    // 1. Валідація PersonalInfo
+
     const personalData = collectPersonalData();
     const personalResult = validateFields(personalData, personalValidators);
     if (!personalResult.valid) {
@@ -317,7 +237,7 @@ function validateAll() {
         }
     }
 
-    // 2. Валідація Experience
+
     DOM.experienceEntries.querySelectorAll('.entry-card').forEach(card => {
         const data = {
             company:   card.querySelector('[name="company"]').value,
@@ -337,7 +257,6 @@ function validateAll() {
         }
     });
 
-    // 3. Валідація Education
     DOM.educationEntries.querySelectorAll('.entry-card').forEach(card => {
         const data = {
             institution: card.querySelector('[name="institution"]').value,
@@ -356,7 +275,7 @@ function validateAll() {
         }
     });
 
-    // 4. Валідація Skills
+
     const skillsData = collectSkillsData();
     const skillsResult = validateFields(skillsData, skillsValidators);
     if (!skillsResult.valid) {
@@ -368,7 +287,7 @@ function validateAll() {
         }
     }
 
-    // Переключити на вкладку з першою помилкою
+
     if (firstInvalidTab) {
         switchTab(firstInvalidTab);
     }
@@ -376,14 +295,7 @@ function validateAll() {
     return allValid;
 }
 
-// ============================================================
-//  Генерація резюме
-// ============================================================
 
-/**
- * generateResume — збирає дані, валідує, створює OOP-об'єкти
- * та рендерить резюме у панель попереднього перегляду.
- */
 function generateResume() {
     console.log('[app.js] Генерація резюме...');
 
@@ -392,37 +304,33 @@ function generateResume() {
         return;
     }
 
-    // Створення нового об'єкту Resume
     currentResume = new Resume();
     window.__resume = currentResume;
 
-    // PersonalInfo
+
     currentResume.setPersonalInfo(collectPersonalData());
 
-    // Experience
+
     currentResume.clearExperience();
     collectExperienceData().forEach(data => currentResume.addExperience(data));
 
-    // Education
     currentResume.clearEducation();
     collectEducationData().forEach(data => currentResume.addEducation(data));
 
-    // Skills
+
     currentResume.setSkills(collectSkillsData());
 
-    // Рендеринг
+
     if (DOM.previewPlaceholder) {
         DOM.previewPlaceholder.style.display = 'none';
     }
     currentResume.render(DOM.resumePreview);
 
-    // Підключити кнопки редагування у preview
     attachEditButtons();
 
     showToast('Резюме успішно створено!', 'success');
     console.log('[app.js] Резюме створено:', currentResume.toJSON());
 
-    // Тест у DevTools: перевірка типів
     const info = currentResume.personalInfo;
     if (info) {
         console.log(`[app.js] Тип age: ${typeof info.age}, значення: ${info.age}`);
@@ -432,21 +340,13 @@ function generateResume() {
 
 DOM.btnGenerate.addEventListener('click', generateResume);
 
-// ============================================================
-//  Кнопки редагування у Preview
-// ============================================================
 
-/**
- * attachEditButtons — додає обробники на кнопки «Редагувати»
- * у відрендереному резюме.
- */
 function attachEditButtons() {
     DOM.resumePreview.querySelectorAll('.btn-edit-section').forEach(btn => {
         btn.addEventListener('click', function () {
             const section = btn.dataset.edit;
             switchTab(section);
 
-            // Анімація підсвітки секції
             const formSection = DOM.sections[section];
             if (formSection) {
                 formSection.classList.add('highlight-section');
@@ -457,15 +357,9 @@ function attachEditButtons() {
     });
 }
 
-// ============================================================
-//  localStorage: збереження / завантаження / очищення
-// ============================================================
 
 const STORAGE_KEY = 'resume_constructor_data';
 
-/**
- * saveToLocalStorage — зберігає дані форм у localStorage.
- */
 function saveToLocalStorage() {
     const data = {
         personal:   collectPersonalData(),
@@ -484,9 +378,7 @@ function saveToLocalStorage() {
     }
 }
 
-/**
- * loadFromLocalStorage — завантажує дані з localStorage та заповнює форму.
- */
+
 function loadFromLocalStorage() {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -498,7 +390,7 @@ function loadFromLocalStorage() {
         const data = JSON.parse(raw);
         console.log('[app.js] Завантажені дані:', data);
 
-        // Заповнення PersonalInfo
+
         if (data.personal) {
             document.getElementById('fullName').value = data.personal.fullName || '';
             document.getElementById('email').value    = data.personal.email || '';
@@ -508,7 +400,6 @@ function loadFromLocalStorage() {
             document.getElementById('summary').value  = data.personal.summary || '';
         }
 
-        // Заповнення Experience
         DOM.experienceEntries.innerHTML = '';
         expCounter = 0;
         if (Array.isArray(data.experience)) {
@@ -523,7 +414,6 @@ function loadFromLocalStorage() {
             });
         }
 
-        // Заповнення Education
         DOM.educationEntries.innerHTML = '';
         eduCounter = 0;
         if (Array.isArray(data.education)) {
@@ -537,7 +427,7 @@ function loadFromLocalStorage() {
             });
         }
 
-        // Заповнення Skills
+    
         if (data.skills) {
             document.getElementById('skillsInput').value = data.skills.skills || '';
         }
@@ -549,13 +439,10 @@ function loadFromLocalStorage() {
     }
 }
 
-/**
- * clearAll — очищує форму, preview та localStorage.
- */
 function clearAll() {
     if (!confirm('Ви впевнені, що хочете очистити всі дані?')) return;
 
-    // Очистити форму PersonalInfo
+
     document.getElementById('fullName').value = '';
     document.getElementById('email').value    = '';
     document.getElementById('phone').value    = '';
@@ -563,29 +450,25 @@ function clearAll() {
     document.getElementById('address').value  = '';
     document.getElementById('summary').value  = '';
 
-    // Очистити Experience / Education
     DOM.experienceEntries.innerHTML = '';
     DOM.educationEntries.innerHTML  = '';
     expCounter = 0;
     eduCounter = 0;
 
-    // Очистити Skills
     document.getElementById('skillsInput').value = '';
 
-    // Очистити preview
+
     DOM.resumePreview.innerHTML = '';
     if (DOM.previewPlaceholder) {
         DOM.resumePreview.appendChild(DOM.previewPlaceholder);
         DOM.previewPlaceholder.style.display = '';
     }
 
-    // Очистити помилки
+
     clearAllErrors();
 
-    // Очистити localStorage
     localStorage.removeItem(STORAGE_KEY);
 
-    // Скинути модель
     currentResume = new Resume();
     window.__resume = currentResume;
 
@@ -598,30 +481,18 @@ DOM.btnSave.addEventListener('click', saveToLocalStorage);
 DOM.btnLoad.addEventListener('click', loadFromLocalStorage);
 DOM.btnClear.addEventListener('click', clearAll);
 
-// ============================================================
-//  Друк
-// ============================================================
 
 DOM.btnPrint.addEventListener('click', function () {
     window.print();
 });
 
-// ============================================================
-//  Toast-повідомлення
-// ============================================================
 
-/**
- * showToast — показує тимчасове повідомлення.
- * @param {string} message — текст
- * @param {string} type — 'success' | 'error' | 'info'
- */
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = message;
     DOM.toastContainer.appendChild(toast);
 
-    // Автовидалення через 3 секунди
     setTimeout(() => {
         if (toast.parentNode) {
             toast.remove();
@@ -629,12 +500,8 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-// ============================================================
-//  Ініціалізація — додати по одному порожньому запису
-// ============================================================
 
 (function init() {
-    // Додати один порожній запис Experience та Education при завантаженні
     DOM.experienceEntries.appendChild(createExperienceEntry());
     DOM.educationEntries.appendChild(createEducationEntry());
 
